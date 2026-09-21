@@ -1,0 +1,5 @@
+Linux is an operating system.
+We are studying Linux.
+C programming is useful.
+Linux provides system calls.
+Assembly helps us understand computers.
