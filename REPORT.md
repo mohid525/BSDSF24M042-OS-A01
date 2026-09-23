@@ -22,3 +22,13 @@ A rule such as:
 
 ```make
 $(TARGET): $(OBJECTS)
+
+## Feature 3: Static Library Build
+
+The static-library Makefile differs from the direct-compilation Makefile because it first compiles source files into object files.
+
+The reusable object files are:
+
+```text
+obj/mystrfunctions.o
+obj/myfilefunctions.o
