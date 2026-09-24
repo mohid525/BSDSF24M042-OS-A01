@@ -4,7 +4,7 @@
 #include "../include/mystrfunctions.h"
 #include "../include/myfilefunctions.h"
 
-static void free_matches(char** matches, int count)
+static void free_matches(char **matches, int count)
 {
     for (int i = 0; i < count; i++)
     {
@@ -18,14 +18,14 @@ int main(void)
 {
     char destination[100] = "Hello";
     char copied[100];
+
     int lines;
     int words;
     int chars;
 
     printf("--- Testing String Functions ---\n");
 
-    printf("Length: %d\n",
-           mystrlen("Operating System"));
+    printf("Length: %d\n", mystrlen("Operating System"));
 
     mystrcpy(copied, "Linux");
     printf("Copied string: %s\n", copied);
@@ -39,7 +39,14 @@ int main(void)
 
     printf("\n--- Testing File Functions ---\n");
 
-    FILE* file = fopen("test.txt", "r");
+    const char *data_path = "test.txt";
+    FILE *file = fopen(data_path, "r");
+
+    if (file == NULL)
+    {
+        data_path = "/usr/local/share/libmyutils/test.txt";
+        file = fopen(data_path, "r");
+    }
 
     if (file == NULL)
     {
@@ -58,7 +65,7 @@ int main(void)
     printf("Words: %d\n", words);
     printf("Characters: %d\n", chars);
 
-    char** matches = NULL;
+    char **matches = NULL;
 
     int match_count = mygrep(file, "Linux", &matches);
 

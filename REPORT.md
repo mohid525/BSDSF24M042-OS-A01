@@ -552,3 +552,90 @@ LD_LIBRARY_PATH=./lib ./bin/client_dynamic
 tells Linux to search the project’s `lib` directory for `libmyutils.so`.
 
 The need for this variable shows that the operating system’s dynamic loader searches configured system directories by default. It does not automatically search the current project’s `lib` directory.
+
+---
+
+# Feature 5: Creating and Accessing Man Pages
+
+## Objective
+
+Feature 5 added standard Linux man pages and an installation target to the project. This provides users with local documentation for the library functions and installs the executable in a standard system directory.
+
+## Man-Page Directory
+
+The man pages were stored in:
+
+```text
+man/man3/
+```
+
+The following six man pages were created:
+
+```text
+mystrlen.3
+mystrcpy.3
+mystrncpy.3
+mystrcat.3
+wordCount.3
+mygrep.3
+```
+
+Each man page contains standard sections including:
+
+- `NAME`
+- `SYNOPSIS`
+- `DESCRIPTION`
+- `RETURN VALUE`
+- `AUTHOR`
+
+## Installation Target
+
+The Makefile was modified to add an `install` target.
+
+The installation command:
+
+```bash
+sudo make install
+```
+
+installs:
+
+- The executable as `/usr/local/bin/client`
+- The man pages in `/usr/local/share/man/man3`
+- The test data file in `/usr/local/share/libmyutils/test.txt`
+
+The program was also modified to search for `test.txt` in the current directory and then in the installed data directory. Therefore, it can run successfully from any directory.
+
+## Installation Testing
+
+The installed command was verified using:
+
+```bash
+command -v client
+```
+
+which returned:
+
+```text
+/usr/local/bin/client
+```
+
+The program was successfully executed from `/tmp` using:
+
+```bash
+client
+```
+
+The man page location was verified using:
+
+```bash
+man -w mystrlen
+```
+
+The man page was then viewed using:
+
+```bash
+man 3 mystrlen
+```
+
+This confirms that the executable and documentation were installed correctly on the Linux system.

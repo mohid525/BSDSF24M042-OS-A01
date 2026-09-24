@@ -1,0 +1,21 @@
+.TH MYGREP 3 "September 2026" "libmyutils" "Library Functions"
+.SH NAME
+mygrep \- find lines containing a search string
+.SH SYNOPSIS
+.B #include <stdio.h>
+.PP
+.B int mygrep(FILE *fp, const char *search_str, char ***matches);
+.SH DESCRIPTION
+.B mygrep
+searches the file stream specified by
+.I fp
+for lines containing
+.I search_str.
+.PP
+For every matching line, the function stores a dynamically allocated copy in the array pointed to by
+.I matches.
+The caller is responsible for freeing the allocated memory.
+.SH RETURN VALUE
+The function returns the number of matching lines on success and -1 if an error occurs.
+.SH AUTHOR
+Muhammad Mohid <mohid525@example.com>

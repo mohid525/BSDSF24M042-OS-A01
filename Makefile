@@ -8,6 +8,12 @@ OBJ_DIR = obj
 LIB_DIR = lib
 BIN_DIR = bin
 
+PREFIX ?= /usr/local
+INSTALL_BIN_DIR = $(PREFIX)/bin
+INSTALL_MAN_DIR = $(PREFIX)/share/man/man3
+DATA_DIR = $(PREFIX)/share/libmyutils
+MAN_PAGES = $(wildcard man/man3/*.3)
+
 STATIC_LIB = $(LIB_DIR)/libmyutils.a
 SHARED_LIB = $(LIB_DIR)/libmyutils.so
 
@@ -26,7 +32,7 @@ PIC_OBJECTS = \
 
 HEADERS = $(wildcard include/*.h)
 
-.PHONY: all build run-static run-dynamic clean
+.PHONY: all build run-static run-dynamic install clean
 
 all: build
 
@@ -56,6 +62,14 @@ run-static: $(STATIC_TARGET)
 
 run-dynamic: $(DYNAMIC_TARGET)
 	LD_LIBRARY_PATH=./$(LIB_DIR) ./$(DYNAMIC_TARGET)
+
+install: $(STATIC_TARGET) $(MAN_PAGES)
+	mkdir -p $(INSTALL_BIN_DIR)
+	mkdir -p $(INSTALL_MAN_DIR)
+	mkdir -p $(DATA_DIR)
+	install -m 755 $(STATIC_TARGET) $(INSTALL_BIN_DIR)/client
+	install -m 644 $(MAN_PAGES) $(INSTALL_MAN_DIR)
+	install -m 644 test.txt $(DATA_DIR)/test.txt
 
 clean:
 	rm -f $(OBJ_DIR)/*.o
