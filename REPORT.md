@@ -406,3 +406,149 @@ The project demonstrates three stages of professional C development:
 3. Feature 3 created a reusable static library and linked the application against it.
 
 
+---
+
+# Feature 4: Dynamic Library Build
+
+## Objective
+
+Feature 4 extends the project to use a dynamic library. Unlike a static library, the shared library code is not copied completely into the executable. The operating system loads the shared library at runtime.
+
+## Dynamic Library
+
+The dynamic library created was:
+
+```text
+lib/libmyutils.so
+```
+
+It was created using position-independent object code and the GCC shared-library option:
+
+```bash
+gcc -shared -o lib/libmyutils.so \
+obj/mystrfunctions.pic.o obj/myfilefunctions.pic.o
+```
+
+The `-fPIC` option creates Position-Independent Code. This code can execute correctly regardless of where the operating system loads it into memory. This is important for shared libraries because the same library can be loaded at different memory addresses by different processes.
+
+## Dynamic Executable
+
+The dynamically linked executable was:
+
+```text
+bin/client_dynamic
+```
+
+It was linked using:
+
+```bash
+gcc -Wall -Wextra -std=c17 obj/main.o \
+-Llib -lmyutils -o bin/client_dynamic
+```
+
+The `-Llib` option tells the linker to search the `lib` directory. The `-lmyutils` option links against `libmyutils.so`.
+
+## Runtime Library Loading
+
+Running the dynamic executable directly produced:
+
+```text
+error while loading shared libraries: libmyutils.so:
+cannot open shared object file
+```
+
+This occurred because the dynamic loader did not automatically search the project’s `lib` directory.
+
+The program ran successfully using:
+
+```bash
+LD_LIBRARY_PATH=./lib ./bin/client_dynamic
+```
+
+The Makefile includes this environment variable in the `run-dynamic` target.
+
+## Dynamic Linking Analysis
+
+The library dependency was checked with:
+
+```bash
+ldd bin/client_dynamic
+```
+
+Without `LD_LIBRARY_PATH`, the output showed:
+
+```text
+libmyutils.so => not found
+```
+
+With the library path specified:
+
+```bash
+LD_LIBRARY_PATH=./lib ldd bin/client_dynamic
+```
+
+the output showed:
+
+```text
+libmyutils.so => ./lib/libmyutils.so
+```
+
+The required shared library was also confirmed using:
+
+```bash
+readelf -d bin/client_dynamic | grep NEEDED
+```
+
+The output contained:
+
+```text
+Shared library: [libmyutils.so]
+Shared library: [libc.so.6]
+```
+
+The exported functions were checked using:
+
+```bash
+nm -D --defined-only lib/libmyutils.so
+```
+
+The output contained:
+
+```text
+mystrlen
+mystrcpy
+mystrncpy
+mystrcat
+wordCount
+mygrep
+```
+
+## Feature 4 Report Questions
+
+### 1. Position-Independent Code
+
+Position-Independent Code, created using `-fPIC`, is machine code that can execute correctly regardless of its memory address.
+
+Shared libraries require position-independent code because the operating system may load the same library at different addresses in different processes. This allows shared-library code to be reused safely.
+
+### 2. Difference between static and dynamic executable sizes
+
+The static and dynamic executables in this project were both approximately 17 KB. The difference is small because the project contains only a small amount of code.
+
+In general, a static executable is larger because it contains copies of the required library code. A dynamic executable is usually smaller because the library code remains in a separate `.so` file and is loaded at runtime.
+
+Dynamic linking also allows multiple programs to share one copy of a library in memory and allows the library to be updated separately from the executable.
+
+### 3. LD_LIBRARY_PATH and the dynamic loader
+
+`LD_LIBRARY_PATH` is an environment variable that adds directories to the dynamic loader’s library search path.
+
+This command:
+
+```bash
+LD_LIBRARY_PATH=./lib ./bin/client_dynamic
+```
+
+tells Linux to search the project’s `lib` directory for `libmyutils.so`.
+
+The need for this variable shows that the operating system’s dynamic loader searches configured system directories by default. It does not automatically search the current project’s `lib` directory.
